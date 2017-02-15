@@ -1,5 +1,5 @@
 var utils = require("./utils");
-utils.debug(true);
+utils.debug(false);
 var log = utils.log;
 
 var STATUS = {
@@ -105,6 +105,9 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
   var self = this;
   var value, promise;
 
+  //1.支持链式调用. var promise = new Promise(); promise.then().then().then();
+  //2.支持多次调用. var promise = new Promise(); promise.then(); promise.then(); promise.then();
+
   //status 为 pending 的时候
   if (self.status == STATUS.PENDING) {
     promise = new Promise(function (resolve, reject) {
@@ -114,7 +117,7 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
           value = resolveCb(self.value);
           resolvePromise(promise, value, resolve, reject);
         } catch (e) {
-          reject(e);
+          return reject(e);
         }
       });
       log("push rejectCb to rejectCbs.");
@@ -123,7 +126,7 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
           value = rejectCb(self.value);
           resolvePromise(promise, value, resolve, reject);
         } catch (e) {
-          reject(e);
+          return reject(e);
         }
       });
     });
@@ -167,7 +170,6 @@ Promise.prototype.reject = function (rejectCb) {
 };
 
 function resolvePromise(promise, value, resolve, reject) {
-
   var then, thenResolvedOrRejected = false;
 
   //情况一, promise 和 value 的值相等
@@ -193,36 +195,36 @@ function resolvePromise(promise, value, resolve, reject) {
   }
 
   //情况三, value 的类型是对象或方法
-  if (value != null && (typeof value == "object" || typeof value == "function")) {
+  if (value !== null && (typeof value === "object" || typeof value === "function")) {
     try {
       then = value.then;
       if (typeof then == "function") {
         then.call(
           value,
-          function resolvePromise(v) {
+          function (v) {
             if (thenResolvedOrRejected == false) {
               thenResolvedOrRejected = true;
-              resolvePromise(promise, v, resolve, reject);
+              return resolvePromise(promise, v, resolve, reject);
             }
           },
           function rejectPromise(r) {
             if (thenResolvedOrRejected == false) {
               thenResolvedOrRejected = true;
-              reject(r);
+              return reject(r);
             }
           }
         );
       } else {
-        resolve(value);
+        return resolve(value);
       }
     } catch (e) {
       if (thenResolvedOrRejected == false) {
         thenResolvedOrRejected = true;
-        reject(e);
+        return reject(e);
       }
     }
   } else {
-    resolve(value);
+    return resolve(value);
   }
 }
 
