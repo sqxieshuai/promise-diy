@@ -1,4 +1,3 @@
-
 var utils = require("./utils");
 utils.debug(true);
 var log = utils.log;
@@ -34,8 +33,9 @@ function Promise(executor) {
           self.resolveCbs[i](self.value);
         }
       }
-    },  0);
+    }, 0);
   }
+
   function reject(reason) {
     log("call Promise reject.");
     setTimeout(function () {
@@ -70,8 +70,8 @@ Promise.reject = function (reason) {
   });
 };
 
-Promise.done = function(){
-  return new Promise(function (){});
+Promise.done = function () {
+  return new Promise(function () {});
 };
 
 Promise.all = function (promises) {
