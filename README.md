@@ -1,4 +1,5 @@
 #### promise-diy
+A promise is defined as an object that has a function as the value for the property then.
 
 ---
 
