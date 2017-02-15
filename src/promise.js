@@ -112,7 +112,7 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
       self.resolveCbs.push(function () {
         try {
           value = resolveCb(self.value);
-          _resolve(promise, value, resolve, reject);
+          resolvePromise(promise, value, resolve, reject);
         } catch (e) {
           reject(e);
         }
@@ -121,7 +121,7 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
       self.rejectCbs.push(function () {
         try {
           value = rejectCb(self.value);
-          _resolve(promise, value, resolve, reject);
+          resolvePromise(promise, value, resolve, reject);
         } catch (e) {
           reject(e);
         }
@@ -135,9 +135,9 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
       setTimeout(function () {
         try {
           value = resolveCb(self.value);
-          _resolve(promise, value, resolve, reject);
+          resolvePromise(promise, value, resolve, reject);
         } catch (e) {
-          reject(e);
+          return reject(e);
         }
       }, 0);
     });
@@ -149,9 +149,9 @@ Promise.prototype.then = function (resolveCb, rejectCb) {
       setTimeout(function () {
         try {
           value = rejectCb(self.value);
-          _resolve(promise, value, resolve, reject);
+          resolvePromise(promise, value, resolve, reject);
         } catch (e) {
-          reject(e);
+          return reject(e);
         }
       }, 0);
     });
@@ -166,13 +166,13 @@ Promise.prototype.reject = function (rejectCb) {
   this.then.call(this, undefined, rejectCb);
 };
 
-function _resolve(promise, value, resolve, reject) {
+function resolvePromise(promise, value, resolve, reject) {
 
   var then, thenResolvedOrRejected = false;
 
   //情况一, promise 和 value 的值相等
   if (promise === value) {
-    reject(new TypeError("promise 参数错误,产生循环."));
+    return reject(new TypeError("promise 参数错误,产生循环."));
   }
 
   //情况二,value 是一个 Promise 实例
@@ -181,7 +181,7 @@ function _resolve(promise, value, resolve, reject) {
     if (value.status == STATUS.PENDING) {
       value.then(
         function (v) {
-          _resolve(promise, v, resolve, reject);
+          resolvePromise(promise, v, resolve, reject);
         },
         reject
       );
@@ -189,6 +189,7 @@ function _resolve(promise, value, resolve, reject) {
       //value 处于 resolved/rejected 状态
       value.then(resolve, reject);
     }
+    return ;
   }
 
   //情况三, value 的类型是对象或方法
@@ -201,7 +202,7 @@ function _resolve(promise, value, resolve, reject) {
           function resolvePromise(v) {
             if (thenResolvedOrRejected == false) {
               thenResolvedOrRejected = true;
-              _resolve(promise, v, resolve, reject);
+              resolvePromise(promise, v, resolve, reject);
             }
           },
           function rejectPromise(r) {
