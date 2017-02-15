@@ -1,0 +1,23 @@
+{
+  "name": "promise-diy",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "promises-aplus-tests index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sqxieshuai/promise-diy.git"
+  },
+  "keywords": ["promises"],
+  "author": "xieshuai",
+  "license": "unlicense",
+  "bugs": {
+    "url": "https://github.com/sqxieshuai/promise-diy/issues"
+  },
+  "homepage": "https://github.com/sqxieshuai/promise-diy#readme",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
