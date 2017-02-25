@@ -23,7 +23,7 @@ function Promise(executor) {
   function resolve(value) {
     log("call Promise resolve.");
     //setTimeout 创建一个 macro-task, 确保所有 micro-task 执行完才会执行 resolveCbs, 这里是需要确保 promise 的 then 或 catch 方法被执行
-    setTimeout(function () {
+    setTimeout(function () { //TODO 这里要不要 setTimeout 有异议, 见 test.js 测试三
       if (self.status == STATUS.PENDING) {
         self.status = STATUS.RESOLVED;
         self.value = value;
