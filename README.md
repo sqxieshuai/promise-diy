@@ -1,4 +1,6 @@
 #### promise-diy
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/sqxieshuai/promise-diy.svg)](https://greenkeeper.io/)
 A promise is defined as an object that has a function as the value for the property then.
 
 ---
